@@ -1,0 +1,34 @@
+{
+	"name": "nautilus-hide",
+	"version": "0.1.0",
+	"description": "A simple Nautilus extension that adds \"Hide\" and \"Unhide\" to Nautilus right-click menu",
+	"homepage": "https://gitlab.gnome.org/madmurphy/nautilus-hide",
+	"author": "madmurphy333@gmail.com",
+	"license": "GPL-3.0-or-later",
+	"repository": {
+		"type": "git",
+		"url": "https://gitlab.gnome.org/madmurphy/nautilus-hide.git"
+	},
+	"dependencies": {
+		"glib2": "*",
+		"libnautilus-extension": "*",
+	},
+	"devDependencies": {
+		"pkgconf": "*",
+		"intltool": "*"
+	},
+	"src": [
+		"src/nautilus-hide.c"
+	],
+	"bugs": {
+		"url": "https://gitlab.gnome.org/madmurphy/nautilus-hide/issues",
+		"email" : "madmurphy333@gmail.com"
+	},
+	"keywords": [
+		"c",
+		"gnome",
+		"nautilus",
+		"nautilus-extension"
+	]
+}
+
