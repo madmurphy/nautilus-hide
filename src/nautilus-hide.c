@@ -2,22 +2,22 @@
 
 /*\
 |*|
-|*|	nautilus-hide.c
+|*| nautilus-hide.c
 |*|
-|*|	Copyright (C) 2021 <madmurphy333@gmail.com>
+|*| Copyright (C) 2021 <madmurphy333@gmail.com>
 |*|
-|*|	nautilus-hide is free software: you can redistribute it and/or modify it
-|*|	under the terms of the GNU General Public License as published by the Free
-|*|	Software Foundation, either version 3 of the License, or (at your option)
+|*| nautilus-hide is free software: you can redistribute it and/or modify it
+|*| under the terms of the GNU General Public License as published by the Free
+|*| Software Foundation, either version 3 of the License, or (at your option)
 |*| any later version.
 |*|
-|*|	nautilus-hide is distributed in the hope that it will be useful, but
-|*|	WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+|*| nautilus-hide is distributed in the hope that it will be useful, but
+|*| WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 |*| or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 |*| more details.
 |*|
-|*|	You should have received a copy of the GNU General Public License along
-|*|	with this program. If not, see <http://www.gnu.org/licenses/>.
+|*| You should have received a copy of the GNU General Public License along
+|*| with this program. If not, see <http://www.gnu.org/licenses/>.
 |*|
 \*/
 
@@ -35,9 +35,14 @@
 #include <nautilus-extension.h>
 
 #ifdef ENABLE_NLS
+#include <libintl.h>
 #include <glib/gi18n-lib.h>
+#define  __(STRING_S, STRING_PL, NUM) ((char *) \
+	dngettext(GETTEXT_PACKAGE, STRING_S, STRING_PL, NUM))
 #else
-#define _(STRING) STRING
+#define _(STRING) ((char *) (STRING))
+#define g_dngettext(DOMAIN, STRING1, STRING2, NUM) \
+	((NUM) > 1 ? (char *) (STRING2) : (char *) (STRING1))
 #endif
 
 
@@ -171,7 +176,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 		fprintf(
 			stderr,
 			"Nautilus Hide: %s\n",
-			_("Database of hidden files is not seekable")
+			_("Could not calculate the size of the database of hidden files")
 		);
 		close_hdb_file(hdb_file, new_ssofwcp->hdb_path);
 		return new_ssofwcp;
@@ -306,29 +311,23 @@ static GList * ordered_file_selection_new (
 
 		}
 
-		if (ordered_selection) {
+		for (d_iter = ordered_selection; d_iter; d_iter = d_iter->next) {
 
-			/*  The ordered selection has already been partially populated  */
+			#define subselection ((ssofwcp *) d_iter->data)
 
-			for (d_iter = ordered_selection; d_iter; d_iter = d_iter->next) {
+			if (!strcmp(subselection->directory, dpath)) {
 
-				#define subselection ((ssofwcp *) d_iter->data)
+				/*  The parent directory of this file had already been indicized  */
 
-				if (!strcmp(subselection->directory, dpath)) {
-
-					/*  The parent directory of this file had already been indicized  */
-
-					subselection->selection = g_list_prepend(
-						subselection->selection,
-						s_iter->data
-					);
-					goto free_and_continue;
-
-				}
-
-				#undef subselection
+				subselection->selection = g_list_prepend(
+					subselection->selection,
+					s_iter->data
+				);
+				goto free_and_continue;
 
 			}
+
+			#undef subselection
 
 		}
 
@@ -722,6 +721,7 @@ static GList * nautilus_hide_get_file_items (
 
 	}
 
+	const unsigned int sel_len = g_list_length(file_selection);
 	bool b_show_hide = false;
 	bool b_show_unhide = false;
 	size_t idx;
@@ -832,8 +832,8 @@ static GList * nautilus_hide_get_file_items (
 
 		NautilusMenuItem * const menu_item_hide = nautilus_menu_item_new(
 			"NautilusHide::hide",
-			_("Hide"),
-			_("Hide the selected files"),
+			g_dngettext(GETTEXT_PACKAGE, "_Hide file", "_Hide files", sel_len),
+			g_dngettext(GETTEXT_PACKAGE, "Hide the selected file", "Hide the selected files", sel_len),
 			NULL /* icon name or `NULL` */
 		);
 
@@ -860,8 +860,8 @@ static GList * nautilus_hide_get_file_items (
 
 		NautilusMenuItem * const menu_item_unhide = nautilus_menu_item_new(
 			"NautilusHide::unhide",
-			_("Unhide"),
-			_("Unhide the selected files"),
+			g_dngettext(GETTEXT_PACKAGE, "_Unhide file", "_Unhide files", sel_len),
+			g_dngettext(GETTEXT_PACKAGE, "Unhide the selected files", "Unhide the selected files", sel_len),
 			NULL /* icon name or `NULL` */
 		);
 
@@ -962,7 +962,7 @@ void nautilus_module_list_types (const GType ** types, int * num_types) {
 }
 
 
-/*  NOTE: `ssofwcp` = Sub-Selection Of Files With Common Parent  */
+/*  NOTE: `ssofwcp` ==> Sub-Selection Of Files With Common Parent  */
 
 
 /*  EOF  */

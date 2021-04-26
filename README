@@ -10,11 +10,12 @@ Details
 
 **Nautilus Hide** does not add a leading dot to file names, but relies on
 Nautilus' ability to hide the files that are listed in a `.hidden` file (to be
-found in the same directory). The extension erases the `.hidden` files when
-empty and is able to handle selections of files that are distributed across
-multiple locations.
+found in the same directory).
 
-If a file is not immediately hidden/unhidden, press `F5` or `Ctrl` + `R` to
+The extension erases the `.hidden` files when these are empty and is able to
+handle selections of files that are distributed across multiple locations.
+
+If a file is not immediately hidden/unhidden, press `Ctrl` + `R` or `F5` to
 refresh the viewport.
 
 
@@ -28,13 +29,13 @@ Let's say you want to create a Dutch translation of **Nautilus Hide**. This
 package comes with only a bunch of strings to translate, whose most important
 ones are:
 
-1. “Hide”
-2. “Hide the selected files”
-3. “Unhide”
-4. “Unhide the selected files”
+1. “Hide file(s)”
+2. “Hide the selected file(s)”
+3. “Unhide file(s)”
+4. “Unhide the selected file(s)”
 
-Other strings are only debug messages sent to the standard error stream and can
-be left untraslated.
+Other translatable strings are only debug messages sent to the standard error
+stream and can be left untraslated.
 
 First thing to do is to make sure that `gettext` and `intltool` are installed
 on your system. Then clone this repository and launch the following four
