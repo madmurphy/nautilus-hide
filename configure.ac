@@ -9,7 +9,7 @@ dnl  ***************************************************************************
 AC_PREREQ([2.69])
 
 AC_INIT([Nautilus Hide],
-	[0.1.1],
+	[0.2.0],
 	[madmurphy333@gmail.com],
 	[nautilus-hide],
 	[https://gitlab.gnome.org/madmurphy/nautilus-hide])
@@ -49,12 +49,13 @@ IT_PROG_INTLTOOL([0.35.0])
 
 AM_CONDITIONAL([NLS_ENABLED], [test "x${USE_NLS}" != xno])
 
-AM_COND_IF([NLS_ENABLED],
-	[AC_SUBST([GETTEXT_PACKAGE], AC_PACKAGE_TARNAME)
+AM_COND_IF([NLS_ENABLED], [
+	AC_SUBST([GETTEXT_PACKAGE], AC_PACKAGE_TARNAME)
 	AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE],
 		["${GETTEXT_PACKAGE}"], [GETTEXT package name])
 	AM_GLIB_GNU_GETTEXT
-	AM_GLIB_DEFINE_LOCALEDIR([NAUTILUS_HIDE_LOCALEDIR])])
+	AM_GLIB_DEFINE_LOCALEDIR([NAUTILUS_HIDE_LOCALEDIR])
+])
 
 
 dnl  ***************************************************************************

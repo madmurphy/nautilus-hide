@@ -34,18 +34,18 @@ ones are:
 3. “Unhide file(s)”
 4. “Unhide the selected file(s)”
 
-Other translatable strings are only debug messages sent to the standard error
-stream and can be left untraslated.
+Other translatable strings are only debug messages sent to the error stream and
+can be left untraslated.
 
 First thing to do is to make sure that `gettext` and `intltool` are installed
 on your system. Then clone this repository and launch the following four
 commands:
 
-```
+``` sh
 cd nautilus-hide/po
 intltool-update -p
 msginit -l nl
-rm nautilus-hide.pot
+rm NautilusHide.pot
 ```
 
 Now edit the `po/LINGUAS` file and add a new line containing the abbreviated
@@ -53,6 +53,16 @@ name of the new language (`nl`).
 
 Finally, open the `po/nl.po` file and translate the strings above. All you have
 to do now is to commit your changes.
+
+If you want to update an existing Dutch translation to the most recent changes
+in the extension source code, launch
+
+``` sh
+cd nautilus-hide/po
+intltool-update -p
+mv nl.po nl.po.bak && msgmerge nl.po.bak NautilusHide.pot > nl.po
+rm NautilusHide.pot nl.po.bak
+```
 
 For any issue, [drop me a message][1].
 

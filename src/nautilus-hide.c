@@ -32,13 +32,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <glib.h>
+#include <glib/gstdio.h>
 #include <nautilus-extension.h>
 
 #ifdef ENABLE_NLS
 #include <libintl.h>
 #include <glib/gi18n-lib.h>
-#define  __(STRING_S, STRING_PL, NUM) ((char *) \
-	dngettext(GETTEXT_PACKAGE, STRING_S, STRING_PL, NUM))
 #else
 #define _(STRING) ((char *) (STRING))
 #define g_dngettext(DOMAIN, STRING1, STRING2, NUM) \
@@ -54,6 +53,9 @@
 */
 
 
+#define NH_R_OK 1
+#define NH_W_OK 2
+
 typedef struct {
 	GObject parent_slot;
 } NautilusHide;
@@ -67,6 +69,7 @@ typedef struct ssofwcp_T {
 	char * hdb_path;
 	char ** hdb_entries;
 	GList * selection;
+	guint8 db_access;
 } ssofwcp;
 
 static GType provider_types[1];
@@ -119,7 +122,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 
 	}
 
-	const size_t dp_len = strlen(dpath);
+	const gsize dp_len = strlen(dpath);
 
 	new_ssofwcp->hdb_entries = NULL;
 	new_ssofwcp->selection = NULL;
@@ -161,10 +164,43 @@ static ssofwcp * ssofwcp_new_with_dir (
 	);
 	new_ssofwcp->hdb_path[dp_len] = '/';
 
+	new_ssofwcp->db_access = (
+		!g_access(new_ssofwcp->hdb_path, R_OK) || (
+			g_access(new_ssofwcp->hdb_path, F_OK) &&
+			!g_access(new_ssofwcp->directory, X_OK)
+		) ?
+			NH_R_OK
+		:
+			0
+	) | (
+		(
+			g_access(new_ssofwcp->hdb_path, F_OK) ?
+				!g_access(new_ssofwcp->directory, W_OK)
+			:
+				!g_access(new_ssofwcp->hdb_path, W_OK)
+		) ?
+			NH_W_OK
+		:
+			0
+	);
+
+
+	if (g_access(new_ssofwcp->hdb_path, R_OK)) {
+
+		return new_ssofwcp;
+
+	}
+
 	FILE * const hdb_file = fopen(new_ssofwcp->hdb_path, "rb");
 
 	if (!hdb_file) {
 
+		fprintf(
+			stderr,
+			"Nautilus Hide: %s (database: %s)\n",
+			_("Error attempting to access the database of hidden files"),
+			new_ssofwcp->hdb_path
+		);
 		return new_ssofwcp;
 
 	}
@@ -175,8 +211,9 @@ static ssofwcp * ssofwcp_new_with_dir (
 
 		fprintf(
 			stderr,
-			"Nautilus Hide: %s\n",
-			_("Could not calculate the size of the database of hidden files")
+			"Nautilus Hide: %s (database: %s)\n",
+			_("Could not calculate the size of the database of hidden files"),
+			new_ssofwcp->hdb_path
 		);
 		close_hdb_file(hdb_file, new_ssofwcp->hdb_path);
 		return new_ssofwcp;
@@ -187,8 +224,9 @@ static ssofwcp * ssofwcp_new_with_dir (
 
 		fprintf(
 			stderr,
-			"Nautilus Hide: %s\n",
-			_("Database of hidden files is too big")
+			"Nautilus Hide: %s (database: %s)\n",
+			_("Database of hidden files is too big"),
+			new_ssofwcp->hdb_path
 		);
 		close_hdb_file(hdb_file, new_ssofwcp->hdb_path);
 		return new_ssofwcp;
@@ -215,8 +253,9 @@ static ssofwcp * ssofwcp_new_with_dir (
 
 		fprintf(
 			stderr,
-			"Nautilus Hide: %s\n",
-			_("I/O error while accessing database of hidden files")
+			"Nautilus Hide: %s (database: %s)\n",
+			_("I/O error while accessing database of hidden files"),
+			new_ssofwcp->hdb_path
 		);
 		free(cache);
 		close_hdb_file(hdb_file, new_ssofwcp->hdb_path);
@@ -225,8 +264,9 @@ static ssofwcp * ssofwcp_new_with_dir (
 	}
 
 	close_hdb_file(hdb_file, new_ssofwcp->hdb_path);
+	cache[file_size] = '\0';
 
-	size_t idx = 0, line_start = 0, fileno = 1;
+	gsize idx = 0, line_start = 0, fileno = 1;
 
 	for (; idx < file_size; idx++) {
 
@@ -246,7 +286,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 
 	}
 
-	new_ssofwcp->hdb_entries = malloc(sizeof(char *) * fileno + file_size);
+	new_ssofwcp->hdb_entries = malloc(sizeof(char *) * fileno + file_size + 1);
 
 	if (!new_ssofwcp->hdb_entries) {
 
@@ -261,7 +301,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 	}
 
 	char * list_buffer = ((char *) new_ssofwcp->hdb_entries) + sizeof(char *) * fileno;
-	memcpy(list_buffer, cache, file_size);
+	memcpy(list_buffer, cache, file_size + 1);
 	free(cache);
 	new_ssofwcp->hdb_entries[fileno - 1] = NULL;
 
@@ -292,7 +332,7 @@ static GList * ordered_file_selection_new (
 
 	GList * ordered_selection = NULL;
 	ssofwcp * new_ssofwcp;
-	gchar * dpath;
+	char * dpath;
 
 	for (GList * d_iter, * s_iter = file_selection; s_iter; s_iter = s_iter->next) {
 
@@ -317,7 +357,7 @@ static GList * ordered_file_selection_new (
 
 			if (!strcmp(subselection->directory, dpath)) {
 
-				/*  The parent directory of this file had already been indicized  */
+				/*  The parent directory of this file has already been indicized  */
 
 				subselection->selection = g_list_prepend(
 					subselection->selection,
@@ -410,7 +450,7 @@ static void nautilus_hide_push_files (
 	}
 
 	char * fname;
-	size_t idx;
+	gsize idx;
 	FILE * hdb_file_w;
 
 	for (
@@ -568,8 +608,8 @@ static void nautilus_hide_pop_files (
 
 	}
 
-	bool b_erase_hdb_file;
-	size_t idx;
+	bool b_keep_hdb_file;
+	gsize idx;
 	char * fname;
 	FILE * hdb_file_w;
 
@@ -585,8 +625,7 @@ static void nautilus_hide_pop_files (
 
 			/*  Database file is empty or missing  */
 
-			remove(subselection->hdb_path);
-			continue;
+			goto remove_db;
 
 		}
 
@@ -611,11 +650,11 @@ static void nautilus_hide_pop_files (
 		}
 
 		idx = 0;
-		b_erase_hdb_file = true;
+		b_keep_hdb_file = false;
 
 
 		/* \                                /\
-		\ */     check_entry:              /* \
+		\ */     check_member:             /* \
 		 \/     ______________________     \ */
 
 
@@ -626,7 +665,7 @@ static void nautilus_hide_pop_files (
 				/*  This is already a dotfile  */
 
 				idx++;
-				goto check_entry;
+				goto check_member;
 
 			}
 
@@ -636,11 +675,11 @@ static void nautilus_hide_pop_files (
 
 				if (!strcmp(fname, subselection->hdb_entries[idx])) {
 
-					/*  This database entry has been marked for deletion  */
+					/*  This database entry is marked for deletion  */
 
 					idx++;
 					g_free(fname);
-					goto check_entry;
+					goto check_member;
 
 				}
 
@@ -649,7 +688,7 @@ static void nautilus_hide_pop_files (
 			}
 
 
-			/*  This database entry is not eligible for deletion  */
+			/*  This database entry is not marked for deletion  */
 
 			fwrite(
 				subselection->hdb_entries[idx],
@@ -657,25 +696,36 @@ static void nautilus_hide_pop_files (
 				strlen(subselection->hdb_entries[idx]), hdb_file_w
 			);
 			fputc('\n', hdb_file_w);
-			b_erase_hdb_file = false;
+			b_keep_hdb_file = true;
 
 			idx++;
-			goto check_entry;
+			goto check_member;
 
 		}
 
 	   	close_hdb_file(hdb_file_w, subselection->hdb_path);
 
-		if (b_erase_hdb_file) {
+		if (b_keep_hdb_file) {
 
-			/*  Database is empty, let's remove the file  */
+			continue;
 
-			remove(subselection->hdb_path);
+		}
+
+
+		/* \                                /\
+		\ */     remove_db:                /* \
+		 \/     ______________________     \ */
+
+
+		/*  Database is empty, let's remove the file  */
+
+		if (!g_access(subselection->directory, W_OK)) {
+
+			g_remove(subselection->hdb_path);
 
 		}
 
 		#undef subselection
-
 
 	}
 
@@ -721,10 +771,10 @@ static GList * nautilus_hide_get_file_items (
 
 	}
 
-	const unsigned int sel_len = g_list_length(file_selection);
+	const unsigned int sellen = g_list_length(file_selection);
 	bool b_show_hide = false;
 	bool b_show_unhide = false;
-	size_t idx;
+	gsize idx;
 	char * fname;
 
 	for (
@@ -734,6 +784,14 @@ static GList * nautilus_hide_get_file_items (
 	) {
 
 		#define subselection ((ssofwcp *) o_iter->data)
+
+		if ((subselection->db_access & (NH_R_OK | NH_W_OK)) != (NH_R_OK | NH_W_OK)) {
+
+			/*  At least one database has not enough permissions  */
+
+			return NULL;
+
+		}
 
 		if (subselection->hdb_entries && *subselection->hdb_entries) {
 
@@ -832,8 +890,8 @@ static GList * nautilus_hide_get_file_items (
 
 		NautilusMenuItem * const menu_item_hide = nautilus_menu_item_new(
 			"NautilusHide::hide",
-			g_dngettext(GETTEXT_PACKAGE, "_Hide file", "_Hide files", sel_len),
-			g_dngettext(GETTEXT_PACKAGE, "Hide the selected file", "Hide the selected files", sel_len),
+			g_dngettext(GETTEXT_PACKAGE, "_Hide file", "_Hide files", sellen),
+			g_dngettext(GETTEXT_PACKAGE, "Hide the selected file", "Hide the selected files", sellen),
 			NULL /* icon name or `NULL` */
 		);
 
@@ -860,8 +918,8 @@ static GList * nautilus_hide_get_file_items (
 
 		NautilusMenuItem * const menu_item_unhide = nautilus_menu_item_new(
 			"NautilusHide::unhide",
-			g_dngettext(GETTEXT_PACKAGE, "_Unhide file", "_Unhide files", sel_len),
-			g_dngettext(GETTEXT_PACKAGE, "Unhide the selected files", "Unhide the selected files", sel_len),
+			g_dngettext(GETTEXT_PACKAGE, "_Unhide file", "_Unhide files", sellen),
+			g_dngettext(GETTEXT_PACKAGE, "Unhide the selected file", "Unhide the selected files", sellen),
 			NULL /* icon name or `NULL` */
 		);
 

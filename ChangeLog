@@ -2,6 +2,14 @@ Change Log
 ==========
 
 
+## 0.2.0 (2021-04-28)
+
+Changes:
+
+* The extension now checks for the database of hidden files' read/write access
+* Code review
+
+
 ## 0.1.1 (2021-04-26)
 
 Changes:
@@ -13,3 +21,4 @@ Changes:
 ## 0.1.0 (2021-04-25)
 
 **Nautilus Hide** has been published.
+
