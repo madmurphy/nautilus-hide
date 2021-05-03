@@ -9,7 +9,7 @@ dnl  ***************************************************************************
 AC_PREREQ([2.69])
 
 AC_INIT([Nautilus Hide],
-	[0.2.0],
+	[0.2.1],
 	[madmurphy333@gmail.com],
 	[nautilus-hide],
 	[https://gitlab.gnome.org/madmurphy/nautilus-hide])
@@ -64,7 +64,7 @@ dnl  ***************************************************************************
 
 
 AC_SUBST([NAUTILUS_EXTENSION_DIR],
-	[$($PKG_CONFIG --variable=extensiondir libnautilus-extension)])
+	["$($PKG_CONFIG --variable=extensiondir libnautilus-extension)"])
 
 LT_INIT([disable-static])
 

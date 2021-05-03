@@ -4,6 +4,8 @@
 |*|
 |*| nautilus-hide.c
 |*|
+|*| https://gitlab.gnome.org/madmurphy/nautilus-hide
+|*|
 |*| Copyright (C) 2021 <madmurphy333@gmail.com>
 |*|
 |*| nautilus-hide is free software: you can redistribute it and/or modify it
@@ -31,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <nautilus-extension.h>
@@ -38,19 +41,22 @@
 #ifdef ENABLE_NLS
 #include <libintl.h>
 #include <glib/gi18n-lib.h>
+#define I18N_INIT() \
+	bindtextdomain(GETTEXT_PACKAGE, NAUTILUS_HIDE_LOCALEDIR)
 #else
 #define _(STRING) ((char *) (STRING))
 #define g_dngettext(DOMAIN, STRING1, STRING2, NUM) \
 	((NUM) > 1 ? (char *) (STRING2) : (char *) (STRING1))
+#define I18N_INIT()
 #endif
 
 
 
-/*
-
-	GLOBAL TYPES AND VARIABLES
-
-*/
+/*\
+|*|
+|*|	GLOBAL TYPES AND VARIABLES
+|*|
+\*/
 
 
 #define NH_R_OK 1
@@ -69,7 +75,7 @@ typedef struct ssofwcp_T {
 	char * hdb_path;
 	char ** hdb_entries;
 	GList * selection;
-	guint8 db_access;
+	guint8 hdb_access;
 } ssofwcp;
 
 static GType provider_types[1];
@@ -79,11 +85,11 @@ static const char hidden_db_fname[] = ".hidden";
 
 
 
-/*
-
-	FUNCTIONS
-
-*/
+/*\
+|*|
+|*|	FUNCTIONS
+|*|
+\*/
 
 
 static void close_hdb_file (
@@ -164,7 +170,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 	);
 	new_ssofwcp->hdb_path[dp_len] = '/';
 
-	new_ssofwcp->db_access = (
+	new_ssofwcp->hdb_access = (
 		!g_access(new_ssofwcp->hdb_path, R_OK) || (
 			g_access(new_ssofwcp->hdb_path, F_OK) &&
 			!g_access(new_ssofwcp->directory, X_OK)
@@ -300,7 +306,9 @@ static ssofwcp * ssofwcp_new_with_dir (
 
 	}
 
-	char * list_buffer = ((char *) new_ssofwcp->hdb_entries) + sizeof(char *) * fileno;
+	char * const list_buffer =
+		((char *) new_ssofwcp->hdb_entries) + sizeof(char *) * fileno;
+
 	memcpy(list_buffer, cache, file_size + 1);
 	free(cache);
 	new_ssofwcp->hdb_entries[fileno - 1] = NULL;
@@ -344,8 +352,8 @@ static GList * ordered_file_selection_new (
 
 			fprintf(
 				stderr,
-				"Nautilus Hide: %s (ENOMEM ID: jwn8bbt)\n",
-				_("Error allocating memory")
+				"Nautilus Hide: %s\n",
+				_("Could not get file path")
 			);
 			return NULL;
 
@@ -427,13 +435,14 @@ static void nautilus_hide_push_files (
 		fprintf(
 			stderr,
 			"Nautilus Hide: %s\n",
-			_("No files were selected to be hidden")
+			_("No files have been selected to be hidden")
 		);
 		return;
 
 	}
 
-	GList * const ordered_selection = ordered_file_selection_new(file_selection);
+	GList * const ordered_selection =
+		ordered_file_selection_new(file_selection);
 
 	if (!ordered_selection) {
 
@@ -482,9 +491,15 @@ static void nautilus_hide_push_files (
 
 			/*  Database file is empty or missing  */
 
-			for (i_iter = subselection->selection; i_iter; i_iter = i_iter->next) {
+			for (
+				i_iter = subselection->selection;
+					i_iter;
+				i_iter = i_iter->next
+			) {
 
-				fname = nautilus_file_info_get_name(NAUTILUS_FILE_INFO(i_iter->data));
+				fname = nautilus_file_info_get_name(
+					NAUTILUS_FILE_INFO(i_iter->data)
+				);
 
 				if (*fname != '.') {
 
@@ -526,7 +541,9 @@ static void nautilus_hide_push_files (
 
 		for (i_iter = subselection->selection; i_iter; i_iter = i_iter->next) {
 
-			fname = nautilus_file_info_get_name(NAUTILUS_FILE_INFO(i_iter->data));
+			fname = nautilus_file_info_get_name(
+				NAUTILUS_FILE_INFO(i_iter->data)
+			);
 
 			if (*fname != '.') {
 
@@ -541,7 +558,8 @@ static void nautilus_hide_push_files (
 
 				if (!subselection->hdb_entries[idx]) {
 
-					/*  This file has not been found in the database, let's add it  */
+					/*  This file has not been found in the database,
+					    let's add it  */
 
 					fwrite(fname, 1, strlen(fname), hdb_file_w);
 					fputc('\n', hdb_file_w);
@@ -586,13 +604,14 @@ static void nautilus_hide_pop_files (
 		fprintf(
 			stderr,
 			"Nautilus Hide: %s\n",
-			_("No files were selected to be unhidden")
+			_("No files have been selected to be unhidden")
 		);
 		return;
 
 	}
 
-	GList * const ordered_selection = ordered_file_selection_new(file_selection);
+	GList * const ordered_selection =
+		ordered_file_selection_new(file_selection);
 
 	if (!ordered_selection) {
 
@@ -669,9 +688,15 @@ static void nautilus_hide_pop_files (
 
 			}
 
-			for (i_iter = subselection->selection; i_iter; i_iter = i_iter->next) {
+			for (
+				i_iter = subselection->selection;
+					i_iter;
+				i_iter = i_iter->next
+			) {
 
-				fname = nautilus_file_info_get_name(NAUTILUS_FILE_INFO(i_iter->data));
+				fname = nautilus_file_info_get_name(
+					NAUTILUS_FILE_INFO(i_iter->data)
+				);
 
 				if (!strcmp(fname, subselection->hdb_entries[idx])) {
 
@@ -734,23 +759,6 @@ static void nautilus_hide_pop_files (
 }
 
 
-GType nautilus_hide_get_type (void) {
-
-	return nautilus_hide_type;
-
-}
-
-
-static void nautilus_hide_class_init (
-	NautilusHideClass * const nautilus_hide_class,
-	gpointer class_data
-) {
-
-	parent_class = g_type_class_peek_parent(nautilus_hide_class);
-
-}
-
-
 static GList * nautilus_hide_get_file_items (
 	NautilusMenuProvider * const provider,
 	GtkWidget * const window,
@@ -763,7 +771,8 @@ static GList * nautilus_hide_get_file_items (
 
 	}
 
-	GList * const ordered_selection = ordered_file_selection_new(file_selection);
+	GList * const ordered_selection =
+		ordered_file_selection_new(file_selection);
 
 	if (!ordered_selection) {
 
@@ -771,11 +780,12 @@ static GList * nautilus_hide_get_file_items (
 
 	}
 
-	const unsigned int sellen = g_list_length(file_selection);
+	const guint sellen = g_list_length(file_selection);
 	bool b_show_hide = false;
 	bool b_show_unhide = false;
 	gsize idx;
 	char * fname;
+	NautilusMenuItem * menu_item;
 
 	for (
 		GList * i_iter, * o_iter = ordered_selection;
@@ -785,7 +795,10 @@ static GList * nautilus_hide_get_file_items (
 
 		#define subselection ((ssofwcp *) o_iter->data)
 
-		if ((subselection->db_access & (NH_R_OK | NH_W_OK)) != (NH_R_OK | NH_W_OK)) {
+		if (
+			(subselection->hdb_access & (NH_R_OK | NH_W_OK)) !=
+			(NH_R_OK | NH_W_OK)
+		) {
 
 			/*  At least one database has not enough permissions  */
 
@@ -797,9 +810,15 @@ static GList * nautilus_hide_get_file_items (
 
 			/*  Database file is not empty  */
 
-			for (i_iter = subselection->selection; i_iter; i_iter = i_iter->next) {
+			for (
+				i_iter = subselection->selection;
+					i_iter;
+				i_iter = i_iter->next
+			) {
 
-				fname = nautilus_file_info_get_name(NAUTILUS_FILE_INFO(i_iter->data));
+				fname = nautilus_file_info_get_name(
+					NAUTILUS_FILE_INFO(i_iter->data)
+				);
 
 				if (*fname == '.') {
 
@@ -851,9 +870,15 @@ static GList * nautilus_hide_get_file_items (
 
 			/*  Database file is empty or missing  */
 
-			for (i_iter = subselection->selection; i_iter; i_iter = i_iter->next) {
+			for (
+				i_iter = subselection->selection;
+					i_iter;
+				i_iter = i_iter->next
+			) {
 
-				fname = nautilus_file_info_get_name(NAUTILUS_FILE_INFO(i_iter->data));
+				fname = nautilus_file_info_get_name(
+					NAUTILUS_FILE_INFO(i_iter->data)
+				);
 
 				if (*fname != '.') {
 
@@ -888,27 +913,38 @@ static GList * nautilus_hide_get_file_items (
 
 		/*  Show a `Hide` menu entry  */
 
-		NautilusMenuItem * const menu_item_hide = nautilus_menu_item_new(
+		menu_item = nautilus_menu_item_new(
 			"NautilusHide::hide",
-			g_dngettext(GETTEXT_PACKAGE, "_Hide file", "_Hide files", sellen),
-			g_dngettext(GETTEXT_PACKAGE, "Hide the selected file", "Hide the selected files", sellen),
+			g_dngettext(
+				GETTEXT_PACKAGE,
+				"_Hide file",
+				"_Hide files",
+				sellen
+			),
+			g_dngettext(
+				GETTEXT_PACKAGE,
+				"Hide the selected file",
+				"Hide the selected files",
+				sellen
+			),
 			NULL /* icon name or `NULL` */
 		);
 
 		g_signal_connect(
-			menu_item_hide,
+			menu_item,
 			"activate",
 			G_CALLBACK(nautilus_hide_push_files),
 			NULL /* or any custom user data */
 		);
 
 		g_object_set_data_full(
-			(GObject *) menu_item_hide, "nautilus_hide_files",
+			(GObject *) menu_item,
+			"nautilus_hide_files",
 			nautilus_file_info_list_copy(file_selection),
 			(GDestroyNotify) nautilus_file_info_list_free
 		);
 
-		menu_entries = g_list_append(NULL, menu_item_hide);
+		menu_entries = g_list_append(NULL, menu_item);
 
 	}
 
@@ -916,27 +952,38 @@ static GList * nautilus_hide_get_file_items (
 
 		/*  Show an `Unhide` menu entry  */
 
-		NautilusMenuItem * const menu_item_unhide = nautilus_menu_item_new(
+		menu_item = nautilus_menu_item_new(
 			"NautilusHide::unhide",
-			g_dngettext(GETTEXT_PACKAGE, "_Unhide file", "_Unhide files", sellen),
-			g_dngettext(GETTEXT_PACKAGE, "Unhide the selected file", "Unhide the selected files", sellen),
+			g_dngettext(
+				GETTEXT_PACKAGE,
+				"_Unhide file",
+				"_Unhide files",
+				sellen
+			),
+			g_dngettext(
+				GETTEXT_PACKAGE,
+				"Unhide the selected file",
+				"Unhide the selected files",
+				sellen
+			),
 			NULL /* icon name or `NULL` */
 		);
 
 		g_signal_connect(
-			menu_item_unhide,
+			menu_item,
 			"activate",
 			G_CALLBACK(nautilus_hide_pop_files),
 			NULL /* or any custom user data */
 		);
 
 		g_object_set_data_full(
-			(GObject *) menu_item_unhide, "nautilus_hide_files",
+			(GObject *) menu_item,
+			"nautilus_hide_files",
 			nautilus_file_info_list_copy(file_selection),
 			(GDestroyNotify) nautilus_file_info_list_free
 		);
 
-		menu_entries = g_list_append(menu_entries, menu_item_unhide);
+		menu_entries = g_list_append(menu_entries, menu_item);
 
 	}
 
@@ -947,7 +994,7 @@ static GList * nautilus_hide_get_file_items (
 
 static void nautilus_hide_menu_provider_iface_init (
 	NautilusMenuProviderIface * const iface,
-	gpointer iface_data
+	gpointer const iface_data
 ) {
 
 	iface->get_file_items = nautilus_hide_get_file_items;
@@ -955,7 +1002,19 @@ static void nautilus_hide_menu_provider_iface_init (
 }
 
 
-static void nautilus_hide_register_type (GTypeModule * const module) {
+static void nautilus_hide_class_init (
+	NautilusHideClass * const nautilus_hide_class,
+	gpointer const class_data
+) {
+
+	parent_class = g_type_class_peek_parent(nautilus_hide_class);
+
+}
+
+
+static void nautilus_hide_register_type (
+	GTypeModule * const module
+) {
 
 	static const GTypeInfo info = {
 		sizeof(NautilusHideClass),
@@ -967,6 +1026,7 @@ static void nautilus_hide_register_type (GTypeModule * const module) {
 		sizeof(NautilusHide),
 		0,
 		(GInstanceInitFunc) NULL,
+		(GTypeValueTable * ) NULL
 	};
 
 	static const GInterfaceInfo menu_provider_iface_info = {
@@ -993,12 +1053,18 @@ static void nautilus_hide_register_type (GTypeModule * const module) {
 }
 
 
-void nautilus_module_initialize (GTypeModule  * const module) {
+GType nautilus_hide_get_type (void) {
 
-	#ifdef ENABLE_NLS
-	bindtextdomain(GETTEXT_PACKAGE, NAUTILUS_HIDE_LOCALEDIR);
-	#endif
+	return nautilus_hide_type;
 
+}
+
+
+void nautilus_module_initialize (
+	GTypeModule * const module
+) {
+
+	I18N_INIT();
 	nautilus_hide_register_type(module);
 	*provider_types = nautilus_hide_get_type();
 
@@ -1012,7 +1078,10 @@ void nautilus_module_shutdown (void) {
 }
 
 
-void nautilus_module_list_types (const GType ** types, int * num_types) {
+void nautilus_module_list_types (
+	const GType ** const types,
+	int * const num_types
+) {
 
 	*types = provider_types;
 	*num_types = G_N_ELEMENTS(provider_types);
