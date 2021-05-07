@@ -9,7 +9,7 @@ dnl  ***************************************************************************
 AC_PREREQ([2.69])
 
 AC_INIT([Nautilus Hide],
-	[0.2.1],
+	[0.2.2],
 	[madmurphy333@gmail.com],
 	[nautilus-hide],
 	[https://gitlab.gnome.org/madmurphy/nautilus-hide])

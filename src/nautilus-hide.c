@@ -1,4 +1,5 @@
 /*  -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*-  */
+/*  Please make sure that the TAB width in your editor is set to 4 spaces  */
 
 /*\
 |*|
@@ -8,12 +9,12 @@
 |*|
 |*| Copyright (C) 2021 <madmurphy333@gmail.com>
 |*|
-|*| nautilus-hide is free software: you can redistribute it and/or modify it
-|*| under the terms of the GNU General Public License as published by the Free
-|*| Software Foundation, either version 3 of the License, or (at your option)
-|*| any later version.
+|*| **Nautilus Hide** is free software: you can redistribute it and/or modify
+|*| it under the terms of the GNU General Public License as published by the
+|*| Free Software Foundation, either version 3 of the License, or (at your
+|*| option) any later version.
 |*|
-|*| nautilus-hide is distributed in the hope that it will be useful, but
+|*| **Nautilus Hide** is distributed in the hope that it will be useful, but
 |*| WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 |*| or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 |*| more details.
@@ -124,6 +125,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 			"Nautilus Hide: %s (ENOMEM ID: k75zc4j)\n",
 			_("Error allocating memory")
 		);
+
 		return NULL;
 
 	}
@@ -141,6 +143,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 			"Nautilus Hide: %s (ENOMEM ID: nkyd8w8)\n",
 			_("Error allocating memory")
 		);
+
 		free(new_ssofwcp);
 		return NULL;
 
@@ -155,6 +158,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 			"Nautilus Hide: %s (ENOMEM ID: bo9axpr)\n",
 			_("Error allocating memory")
 		);
+
 		free(new_ssofwcp->directory);
 		free(new_ssofwcp);
 		return NULL;
@@ -163,11 +167,13 @@ static ssofwcp * ssofwcp_new_with_dir (
 
 	memcpy(new_ssofwcp->directory, dpath, dp_len + 1);
 	memcpy(new_ssofwcp->hdb_path, dpath, dp_len);
+
 	memcpy(
 		new_ssofwcp->hdb_path + dp_len + 1,
 		hidden_db_fname,
 		sizeof(hidden_db_fname)
 	);
+
 	new_ssofwcp->hdb_path[dp_len] = '/';
 
 	new_ssofwcp->hdb_access = (
@@ -207,6 +213,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 			_("Error attempting to access the database of hidden files"),
 			new_ssofwcp->hdb_path
 		);
+
 		return new_ssofwcp;
 
 	}
@@ -221,6 +228,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 			_("Could not calculate the size of the database of hidden files"),
 			new_ssofwcp->hdb_path
 		);
+
 		close_hdb_file(hdb_file, new_ssofwcp->hdb_path);
 		return new_ssofwcp;
 
@@ -234,6 +242,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 			_("Database of hidden files is too big"),
 			new_ssofwcp->hdb_path
 		);
+
 		close_hdb_file(hdb_file, new_ssofwcp->hdb_path);
 		return new_ssofwcp;
 
@@ -248,6 +257,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 			"Nautilus Hide: %s (ENOMEM ID: kmh80ll)\n",
 			_("Error allocating memory")
 		);
+
 		close_hdb_file(hdb_file, new_ssofwcp->hdb_path);
 		return new_ssofwcp;
 
@@ -263,6 +273,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 			_("I/O error while accessing database of hidden files"),
 			new_ssofwcp->hdb_path
 		);
+
 		free(cache);
 		close_hdb_file(hdb_file, new_ssofwcp->hdb_path);
 		return new_ssofwcp;
@@ -278,8 +289,6 @@ static ssofwcp * ssofwcp_new_with_dir (
 
 		if (cache[idx] == '\n') {
 
-			cache[idx] = '\0';
-
 			if (line_start != idx) {
 
 				fileno++;
@@ -287,6 +296,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 			}
 
 			line_start = idx + 1;
+			cache[idx] = '\0';
 
 		}
 
@@ -301,6 +311,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 			"Nautilus Hide: %s (ENOMEM ID: fk9c9sj)\n",
 			_("Error allocating memory")
 		);
+
 		free(cache);
 		return new_ssofwcp;
 
@@ -338,15 +349,23 @@ static GList * ordered_file_selection_new (
 	GList * const file_selection
 ) {
 
+	char * dpath;
+	GFile * location;
 	GList * ordered_selection = NULL;
 	ssofwcp * new_ssofwcp;
-	char * dpath;
 
-	for (GList * d_iter, * s_iter = file_selection; s_iter; s_iter = s_iter->next) {
+	for (
+		GList * d_iter, * s_iter = file_selection;
+			s_iter;
+		s_iter = s_iter->next
+	) {
 
-		dpath = g_file_get_path(
-			nautilus_file_info_get_parent_location(NAUTILUS_FILE_INFO(s_iter->data))
+		location = nautilus_file_info_get_parent_location(
+			NAUTILUS_FILE_INFO(s_iter->data)
 		);
+
+		dpath = g_file_get_path(location);
+		g_object_unref(location);
 
 		if (!dpath) {
 
@@ -355,6 +374,7 @@ static GList * ordered_file_selection_new (
 				"Nautilus Hide: %s\n",
 				_("Could not get file path")
 			);
+
 			return NULL;
 
 		}
@@ -365,12 +385,13 @@ static GList * ordered_file_selection_new (
 
 			if (!strcmp(subselection->directory, dpath)) {
 
-				/*  The parent directory of this file has already been indicized  */
+				/*  The parent directory of this file was already indicized  */
 
 				subselection->selection = g_list_prepend(
 					subselection->selection,
 					s_iter->data
 				);
+
 				goto free_and_continue;
 
 			}
@@ -426,8 +447,8 @@ static void nautilus_hide_push_files (
 ) {
 
 	GList * const file_selection = g_object_get_data(
-			(GObject *) menu_item,
-			"nautilus_hide_files"
+		G_OBJECT(menu_item),
+		"nautilus_hide_files"
 	);
 
 	if (!file_selection) {
@@ -437,6 +458,7 @@ static void nautilus_hide_push_files (
 			"Nautilus Hide: %s\n",
 			_("No files have been selected to be hidden")
 		);
+
 		return;
 
 	}
@@ -454,6 +476,7 @@ static void nautilus_hide_push_files (
 				"to group them according to their parent directories"
 			)
 		);
+
 		return;
 
 	}
@@ -483,6 +506,7 @@ static void nautilus_hide_push_files (
 				),
 				subselection->hdb_path
 			);
+
 			continue;
 
 		}
@@ -533,6 +557,7 @@ static void nautilus_hide_push_files (
 					strlen(subselection->hdb_entries[idx]),
 					hdb_file_w
 				);
+
 				fputc('\n', hdb_file_w);
 
 			}
@@ -595,7 +620,7 @@ static void nautilus_hide_pop_files (
 ) {
 
 	GList * const file_selection = g_object_get_data(
-		(GObject *) menu_item,
+		G_OBJECT(menu_item),
 		"nautilus_hide_files"
 	);
 
@@ -606,6 +631,7 @@ static void nautilus_hide_pop_files (
 			"Nautilus Hide: %s\n",
 			_("No files have been selected to be unhidden")
 		);
+
 		return;
 
 	}
@@ -623,6 +649,7 @@ static void nautilus_hide_pop_files (
 				"to group them according to their parent directories"
 			)
 		);
+
 		return;
 
 	}
@@ -664,6 +691,7 @@ static void nautilus_hide_pop_files (
 				),
 				subselection->hdb_path
 			);
+
 			continue;
 
 		}
@@ -720,9 +748,9 @@ static void nautilus_hide_pop_files (
 				1,
 				strlen(subselection->hdb_entries[idx]), hdb_file_w
 			);
+
 			fputc('\n', hdb_file_w);
 			b_keep_hdb_file = true;
-
 			idx++;
 			goto check_member;
 
@@ -938,7 +966,7 @@ static GList * nautilus_hide_get_file_items (
 		);
 
 		g_object_set_data_full(
-			(GObject *) menu_item,
+			G_OBJECT(menu_item),
 			"nautilus_hide_files",
 			nautilus_file_info_list_copy(file_selection),
 			(GDestroyNotify) nautilus_file_info_list_free
@@ -977,7 +1005,7 @@ static GList * nautilus_hide_get_file_items (
 		);
 
 		g_object_set_data_full(
-			(GObject *) menu_item,
+			G_OBJECT(menu_item),
 			"nautilus_hide_files",
 			nautilus_file_info_list_copy(file_selection),
 			(GDestroyNotify) nautilus_file_info_list_free
@@ -1026,7 +1054,7 @@ static void nautilus_hide_register_type (
 		sizeof(NautilusHide),
 		0,
 		(GInstanceInitFunc) NULL,
-		(GTypeValueTable * ) NULL
+		(GTypeValueTable *) NULL
 	};
 
 	static const GInterfaceInfo menu_provider_iface_info = {

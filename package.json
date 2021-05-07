@@ -1,6 +1,6 @@
 {
 	"name": "nautilus-hide",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "A simple Nautilus extension that adds \"Hide\" and \"Unhide\" to Nautilus right-click menu",
 	"homepage": "https://gitlab.gnome.org/madmurphy/nautilus-hide",
 	"author": "madmurphy333@gmail.com",
@@ -25,8 +25,13 @@
 		"email" : "madmurphy333@gmail.com"
 	},
 	"keywords": [
-		"c",
+		"desktop",
+		"desktop-environment",
+		"dotfiles",
+		"hidden-files",
 		"gnome",
+		"gnu",
+		"gnu-linux",
 		"nautilus",
 		"nautilus-extension"
 	]
