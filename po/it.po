@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.2.2\n"
+"Project-Id-Version: 0.2.3\n"
 "Report-Msgid-Bugs-To: <madmurphy333@gmail.com>\n"
-"POT-Creation-Date: 2021-05-07 14:09+0200\n"
-"PO-Revision-Date: 2021-05-07 14:09+0200\n"
+"POT-Creation-Date: 2021-05-24 11:52+0200\n"
+"PO-Revision-Date: 2021-05-24 11:52+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
 "Language: it\n"
@@ -17,41 +17,37 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../src/nautilus-hide.c:106
+#: ../src/nautilus-hide.c:119
 msgid "Could not close the database of hidden files"
 msgstr "Impossibile chiudere il database dei file nascosti"
 
-#: ../src/nautilus-hide.c:126 ../src/nautilus-hide.c:144
-#: ../src/nautilus-hide.c:159 ../src/nautilus-hide.c:258
-#: ../src/nautilus-hide.c:312
+#: ../src/nautilus-hide.c:136 ../src/nautilus-hide.c:149
+#: ../src/nautilus-hide.c:159 ../src/nautilus-hide.c:252
+#: ../src/nautilus-hide.c:300
 msgid "Error allocating memory"
 msgstr "Errore nell'allocare memoria"
 
-#: ../src/nautilus-hide.c:213
+#: ../src/nautilus-hide.c:209
 msgid "Error attempting to access the database of hidden files"
 msgstr "Impossibile accedere al database dei file nascosti"
 
-#: ../src/nautilus-hide.c:228
+#: ../src/nautilus-hide.c:226
 msgid "Could not calculate the size of the database of hidden files"
 msgstr "Impossibile calcolare le dimensioni del database dei file nascosti"
 
-#: ../src/nautilus-hide.c:242
+#: ../src/nautilus-hide.c:239
 msgid "Database of hidden files is too big"
 msgstr "Il database dei file nascosti è troppo grande"
 
-#: ../src/nautilus-hide.c:273
+#: ../src/nautilus-hide.c:264
 msgid "I/O error while accessing database of hidden files"
 msgstr "Errore I/O nell'accedere al database dei file nascosti"
 
-#: ../src/nautilus-hide.c:375
-msgid "Could not get file path"
-msgstr "Impossibile ottenere la posizione del file"
-
-#: ../src/nautilus-hide.c:459
+#: ../src/nautilus-hide.c:440
 msgid "No files have been selected to be hidden"
 msgstr "Non ci sono file selezionati da nascondere"
 
-#: ../src/nautilus-hide.c:475
+#: ../src/nautilus-hide.c:453
 msgid ""
 "Could not hide the selected files, error attempting to group them according "
 "to their parent directories"
@@ -59,18 +55,18 @@ msgstr ""
 "Impossibile nascondere i file selezionati, errore nel tentativo di "
 "raggrupparli in base alla loro directory di appartenenza"
 
-#: ../src/nautilus-hide.c:504
+#: ../src/nautilus-hide.c:481
 msgid ""
 "Could not hide the selected files, error attempting to edit the database"
 msgstr ""
 "Impossibile nascondere i file selezionati, errore nel tentativo di "
 "modificare il database"
 
-#: ../src/nautilus-hide.c:632
+#: ../src/nautilus-hide.c:606
 msgid "No files have been selected to be unhidden"
 msgstr "Non ci sono file selezionati da rendere visibili"
 
-#: ../src/nautilus-hide.c:648
+#: ../src/nautilus-hide.c:619
 msgid ""
 "Could not unhide the selected files, error attempting to group them "
 "according to their parent directories"
@@ -78,32 +74,32 @@ msgstr ""
 "Impossibile rendere visibili i file selezionati, errore nel tentativo di "
 "raggrupparli in base alla loro directory di appartenenza"
 
-#: ../src/nautilus-hide.c:689
+#: ../src/nautilus-hide.c:659
 msgid ""
 "Could not unhide the selected files, error attempting to edit the database"
 msgstr ""
 "Impossibile rendere visibili i file selezionati, errore nel tentativo di "
 "modificare il database"
 
-#: ../src/nautilus-hide.c:948
+#: ../src/nautilus-hide.c:918
 msgid "_Hide file"
 msgid_plural "_Hide files"
 msgstr[0] "_Nascondi"
 msgstr[1] "_Nascondi i file"
 
-#: ../src/nautilus-hide.c:954
+#: ../src/nautilus-hide.c:924
 msgid "Hide the selected file"
 msgid_plural "Hide the selected files"
 msgstr[0] "Nascondi il file selezionato"
 msgstr[1] "Nascondi i file selezionati"
 
-#: ../src/nautilus-hide.c:987
+#: ../src/nautilus-hide.c:957
 msgid "_Unhide file"
 msgid_plural "_Unhide files"
 msgstr[0] "Ripristina _visibilità"
 msgstr[1] "Ripristina _visibilità dei file"
 
-#: ../src/nautilus-hide.c:993
+#: ../src/nautilus-hide.c:963
 msgid "Unhide the selected file"
 msgid_plural "Unhide the selected files"
 msgstr[0] "Rendi visibile il file selezionato"

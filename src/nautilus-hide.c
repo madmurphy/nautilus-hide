@@ -39,6 +39,15 @@
 #include <glib/gstdio.h>
 #include <nautilus-extension.h>
 
+
+
+/*\
+|*|
+|*| BUILD SETTINGS
+|*|
+\*/
+
+
 #ifdef ENABLE_NLS
 #include <libintl.h>
 #include <glib/gi18n-lib.h>
@@ -55,10 +64,15 @@
 
 /*\
 |*|
-|*|	GLOBAL TYPES AND VARIABLES
+|*| GLOBAL TYPES AND VARIABLES
 |*|
 \*/
 
+
+#ifdef G_LOG_DOMAIN
+#undef G_LOG_DOMAIN
+#endif
+#define G_LOG_DOMAIN "Nautilus-Hide"
 
 #define NH_R_OK 1
 #define NH_W_OK 2
@@ -88,7 +102,7 @@ static const char hidden_db_fname[] = ".hidden";
 
 /*\
 |*|
-|*|	FUNCTIONS
+|*| FUNCTIONS
 |*|
 \*/
 
@@ -100,9 +114,8 @@ static void close_hdb_file (
 
 	if (fclose(hdb_file) == EOF) {
 
-		fprintf(
-			stderr,
-			"Nautilus Hide: %s (database: %s)\n",
+		g_message(
+			"%s (database: %s)",
 			_("Could not close the database of hidden files"),
 			hdb_path
 		);
@@ -120,12 +133,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 
 	if (!new_ssofwcp) {
 
-		fprintf(
-			stderr,
-			"Nautilus Hide: %s (ENOMEM ID: k75zc4j)\n",
-			_("Error allocating memory")
-		);
-
+		g_message("%s (ENOMEM ID: k75zc4j)", _("Error allocating memory"));
 		return NULL;
 
 	}
@@ -138,12 +146,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 
 	if (!new_ssofwcp->directory) {
 
-		fprintf(
-			stderr,
-			"Nautilus Hide: %s (ENOMEM ID: nkyd8w8)\n",
-			_("Error allocating memory")
-		);
-
+		g_message("%s (ENOMEM ID: nkyd8w8)", _("Error allocating memory"));
 		free(new_ssofwcp);
 		return NULL;
 
@@ -153,12 +156,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 
 	if (!new_ssofwcp->hdb_path) {
 
-		fprintf(
-			stderr,
-			"Nautilus Hide: %s (ENOMEM ID: bo9axpr)\n",
-			_("Error allocating memory")
-		);
-
+		g_message("%s (ENOMEM ID: bo9axpr)", _("Error allocating memory"));
 		free(new_ssofwcp->directory);
 		free(new_ssofwcp);
 		return NULL;
@@ -196,20 +194,18 @@ static ssofwcp * ssofwcp_new_with_dir (
 			0
 	);
 
-
 	if (g_access(new_ssofwcp->hdb_path, R_OK)) {
 
 		return new_ssofwcp;
 
 	}
 
-	FILE * const hdb_file = fopen(new_ssofwcp->hdb_path, "rb");
+	FILE * const hdb_file_r = fopen(new_ssofwcp->hdb_path, "rb");
 
-	if (!hdb_file) {
+	if (!hdb_file_r) {
 
-		fprintf(
-			stderr,
-			"Nautilus Hide: %s (database: %s)\n",
+		g_message(
+			"%s (database: %s)",
 			_("Error attempting to access the database of hidden files"),
 			new_ssofwcp->hdb_path
 		);
@@ -218,32 +214,33 @@ static ssofwcp * ssofwcp_new_with_dir (
 
 	}
 
-	off_t file_size;
+	unsigned long int file_size;
 
-	if (fseek(hdb_file, 0, SEEK_END) || (file_size = ftell(hdb_file)) < 0) {
+	if (
+		fseek(hdb_file_r, 0, SEEK_END) ||
+		(file_size = ftell(hdb_file_r)) < 0
+	) {
 
-		fprintf(
-			stderr,
-			"Nautilus Hide: %s (database: %s)\n",
+		g_message(
+			"%s (database: %s)",
 			_("Could not calculate the size of the database of hidden files"),
 			new_ssofwcp->hdb_path
 		);
 
-		close_hdb_file(hdb_file, new_ssofwcp->hdb_path);
+		close_hdb_file(hdb_file_r, new_ssofwcp->hdb_path);
 		return new_ssofwcp;
 
 	}
 
 	if ((uintmax_t) file_size > (uintmax_t) SIZE_MAX) {
 
-		fprintf(
-			stderr,
-			"Nautilus Hide: %s (database: %s)\n",
+		g_message(
+			"%s (database: %s)",
 			_("Database of hidden files is too big"),
 			new_ssofwcp->hdb_path
 		);
 
-		close_hdb_file(hdb_file, new_ssofwcp->hdb_path);
+		close_hdb_file(hdb_file_r, new_ssofwcp->hdb_path);
 		return new_ssofwcp;
 
 	}
@@ -252,35 +249,29 @@ static ssofwcp * ssofwcp_new_with_dir (
 
 	if (!cache) {
 
-		fprintf(
-			stderr,
-			"Nautilus Hide: %s (ENOMEM ID: kmh80ll)\n",
-			_("Error allocating memory")
-		);
-
-		close_hdb_file(hdb_file, new_ssofwcp->hdb_path);
+		g_message("%s (ENOMEM ID: kmh80ll)", _("Error allocating memory"));
+		close_hdb_file(hdb_file_r, new_ssofwcp->hdb_path);
 		return new_ssofwcp;
 
 	}
 
-	rewind(hdb_file);
+	rewind(hdb_file_r);
 
-	if (fread(cache, 1, (size_t) file_size, hdb_file) < file_size) {
+	if (fread(cache, 1, (size_t) file_size, hdb_file_r) < file_size) {
 
-		fprintf(
-			stderr,
-			"Nautilus Hide: %s (database: %s)\n",
+		g_message(
+			"%s (database: %s)",
 			_("I/O error while accessing database of hidden files"),
 			new_ssofwcp->hdb_path
 		);
 
 		free(cache);
-		close_hdb_file(hdb_file, new_ssofwcp->hdb_path);
+		close_hdb_file(hdb_file_r, new_ssofwcp->hdb_path);
 		return new_ssofwcp;
 
 	}
 
-	close_hdb_file(hdb_file, new_ssofwcp->hdb_path);
+	close_hdb_file(hdb_file_r, new_ssofwcp->hdb_path);
 	cache[file_size] = '\0';
 
 	gsize idx = 0, line_start = 0, fileno = 1;
@@ -306,12 +297,7 @@ static ssofwcp * ssofwcp_new_with_dir (
 
 	if (!new_ssofwcp->hdb_entries) {
 
-		fprintf(
-			stderr,
-			"Nautilus Hide: %s (ENOMEM ID: fk9c9sj)\n",
-			_("Error allocating memory")
-		);
-
+		g_message("%s (ENOMEM ID: fk9c9sj)", _("Error allocating memory"));
 		free(cache);
 		return new_ssofwcp;
 
@@ -369,11 +355,7 @@ static GList * ordered_file_selection_new (
 
 		if (!dpath) {
 
-			fprintf(
-				stderr,
-				"Nautilus Hide: %s\n",
-				_("Could not get file path")
-			);
+			/*  `s_iter->data` is not an actual file  */
 
 			return NULL;
 
@@ -432,10 +414,12 @@ static GList * ordered_file_selection_new (
 static void ssofwcp_destroy (gpointer data) {
 
 	#define subselection ((ssofwcp *) data)
+
 	free(subselection->directory);
 	free(subselection->hdb_path);
 	free(subselection->hdb_entries);
 	g_list_free(subselection->selection);
+
 	#undef subselection
 
 }
@@ -453,12 +437,7 @@ static void nautilus_hide_push_files (
 
 	if (!file_selection) {
 
-		fprintf(
-			stderr,
-			"Nautilus Hide: %s\n",
-			_("No files have been selected to be hidden")
-		);
-
+		g_message("%s", _("No files have been selected to be hidden"));
 		return;
 
 	}
@@ -468,9 +447,8 @@ static void nautilus_hide_push_files (
 
 	if (!ordered_selection) {
 
-		fprintf(
-			stderr,
-			"Nautilus Hide: %s\n",
+		g_message(
+			"%s",
 			_(
 				"Could not hide the selected files, error attempting "
 				"to group them according to their parent directories"
@@ -497,9 +475,8 @@ static void nautilus_hide_push_files (
 
 		if (!hdb_file_w) {
 
-			fprintf(
-				stderr,
-				"Nautilus Hide: %s (database: %s)\n",
+			g_message(
+				"%s (database: %s)",
 				_(
 					"Could not hide the selected files, "
 					"error attempting to edit the database"
@@ -626,12 +603,7 @@ static void nautilus_hide_pop_files (
 
 	if (!file_selection) {
 
-		fprintf(
-			stderr,
-			"Nautilus Hide: %s\n",
-			_("No files have been selected to be unhidden")
-		);
-
+		g_message("%s", _("No files have been selected to be unhidden"));
 		return;
 
 	}
@@ -641,9 +613,8 @@ static void nautilus_hide_pop_files (
 
 	if (!ordered_selection) {
 
-		fprintf(
-			stderr,
-			"Nautilus Hide: %s\n",
+		g_message(
+			"%s",
 			_(
 				"Could not unhide the selected files, error attempting "
 				"to group them according to their parent directories"
@@ -682,9 +653,8 @@ static void nautilus_hide_pop_files (
 
 		if (!hdb_file_w) {
 
-			fprintf(
-				stderr,
-				"Nautilus Hide: %s (database: %s)\n",
+			g_message(
+				"%s (database: %s)",
 				_(
 					"Could not unhide the selected files, "
 					"error attempting to edit the database"
@@ -955,14 +925,14 @@ static GList * nautilus_hide_get_file_items (
 				"Hide the selected files",
 				sellen
 			),
-			NULL /* icon name or `NULL` */
+			"view-conceal"
 		);
 
 		g_signal_connect(
 			menu_item,
 			"activate",
 			G_CALLBACK(nautilus_hide_push_files),
-			NULL /* or any custom user data */
+			NULL
 		);
 
 		g_object_set_data_full(
@@ -994,14 +964,14 @@ static GList * nautilus_hide_get_file_items (
 				"Unhide the selected files",
 				sellen
 			),
-			NULL /* icon name or `NULL` */
+			"view-reveal"
 		);
 
 		g_signal_connect(
 			menu_item,
 			"activate",
 			G_CALLBACK(nautilus_hide_pop_files),
-			NULL /* or any custom user data */
+			NULL
 		);
 
 		g_object_set_data_full(
@@ -1088,17 +1058,6 @@ GType nautilus_hide_get_type (void) {
 }
 
 
-void nautilus_module_initialize (
-	GTypeModule * const module
-) {
-
-	I18N_INIT();
-	nautilus_hide_register_type(module);
-	*provider_types = nautilus_hide_get_type();
-
-}
-
-
 void nautilus_module_shutdown (void) {
 
 	/*  Any module-specific shutdown  */
@@ -1113,6 +1072,17 @@ void nautilus_module_list_types (
 
 	*types = provider_types;
 	*num_types = G_N_ELEMENTS(provider_types);
+
+}
+
+
+void nautilus_module_initialize (
+	GTypeModule * const module
+) {
+
+	I18N_INIT();
+	nautilus_hide_register_type(module);
+	*provider_types = nautilus_hide_get_type();
 
 }
 

@@ -43,9 +43,9 @@ commands:
 
 ``` sh
 cd nautilus-hide/po
-intltool-update -p
+intltool-update -p --gettext-package=nautilus-hide
 msginit -l nl
-rm NautilusHide.pot
+rm nautilus-hide.pot
 ```
 
 Now edit the `po/LINGUAS` file and add a new line containing the abbreviated
@@ -59,9 +59,9 @@ in the extension source code, launch
 
 ``` sh
 cd nautilus-hide/po
-intltool-update -p
-mv nl.po nl.po.bak && msgmerge nl.po.bak NautilusHide.pot > nl.po
-rm NautilusHide.pot nl.po.bak
+intltool-update -p --gettext-package=nautilus-hide
+mv nl.po nl.po.bak && msgmerge nl.po.bak nautilus-hide.pot > nl.po
+rm nautilus-hide.pot nl.po.bak
 ```
 
 For any issue, [drop me a message][1].
@@ -77,9 +77,9 @@ generator.
 Free software
 -------------
 
-This extension is free software. You can redistribute it and/or modify it under
-the terms of the GPL license version 3 or any later version. See [COPYING][3]
-for details.
+**Nautilus Hide** is free software. You can redistribute it and/or modify it
+under the terms of the GPL license version 3 or any later version. See
+[COPYING][3] for details.
 
 
   [1]: https://gitlab.gnome.org/madmurphy/nautilus-hide/issues
