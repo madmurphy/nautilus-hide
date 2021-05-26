@@ -49,10 +49,9 @@
 
 
 #ifdef ENABLE_NLS
-#include <libintl.h>
 #include <glib/gi18n-lib.h>
 #define I18N_INIT() \
-	bindtextdomain(GETTEXT_PACKAGE, NAUTILUS_HIDE_LOCALEDIR)
+	bindtextdomain(GETTEXT_PACKAGE, PACKAGE_LOCALE_DIR)
 #else
 #define _(STRING) ((char *) (STRING))
 #define g_dngettext(DOMAIN, STRING1, STRING2, NUM) \
@@ -67,12 +66,6 @@
 |*| GLOBAL TYPES AND VARIABLES
 |*|
 \*/
-
-
-#ifdef G_LOG_DOMAIN
-#undef G_LOG_DOMAIN
-#endif
-#define G_LOG_DOMAIN "Nautilus-Hide"
 
 #define NH_R_OK 1
 #define NH_W_OK 2

@@ -2,6 +2,19 @@ NEWS
 ====
 
 
+## 0.2.4
+
+Changes:
+
+* Internationalization does not depend on **XDG intltool** anymore, but only on
+  **GNU gettext**
+
+
+## 0.2.0
+
+* The extension now checks for the database of hidden files' read/write access
+
+
 ## 0.1.0
 
 **Nautilus Hide** has been published.

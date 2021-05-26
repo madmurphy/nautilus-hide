@@ -2,6 +2,14 @@ Change Log
 ==========
 
 
+## 0.2.4 (2021-05-27)
+
+Changes:
+
+* Internationalization does not depend on **XDG intltool** anymore, but only on
+  **GNU gettext**
+
+
 ## 0.2.3 (2021-05-24)
 
 Changes:
