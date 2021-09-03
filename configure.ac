@@ -9,7 +9,7 @@ dnl  **************************************************************************
 AC_PREREQ([2.69])
 
 AC_INIT([Nautilus Hide],
-	[0.2.4],
+	[0.2.5],
 	[madmurphy333@gmail.com],
 	[nautilus-hide],
 	[https://gitlab.gnome.org/madmurphy/nautilus-hide])
@@ -48,7 +48,7 @@ dnl  **************************************************************************
 
 AM_GNU_GETTEXT([external])
 
-AM_GNU_GETTEXT_VERSION([0.21])
+AM_GNU_GETTEXT_VERSION([0.19])
 
 AM_CONDITIONAL([NLS_ENABLED], [test "x${USE_NLS}" != xno])
 
