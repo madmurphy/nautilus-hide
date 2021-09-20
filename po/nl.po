@@ -1,0 +1,110 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR madmurphy333@gmail.com
+# This file is distributed under the same license as the nautilus-hide package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: nautilus-hide 0.2.5\n"
+"Report-Msgid-Bugs-To: madmurphy333@gmail.com\n"
+"POT-Creation-Date: 2021-09-20 17:11+0200\n"
+"PO-Revision-Date: 2021-09-20 17:16+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.0\n"
+"Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
+"Language: nl\n"
+
+#: src/nautilus-hide.c:112
+msgid "Could not close the database of hidden files"
+msgstr "De databank met verborgen bestanden kan niet worden gesloten"
+
+#: src/nautilus-hide.c:129 src/nautilus-hide.c:142 src/nautilus-hide.c:152
+#: src/nautilus-hide.c:245 src/nautilus-hide.c:293
+msgid "Error allocating memory"
+msgstr "Er kan geen geheugen worden toegewezen"
+
+#: src/nautilus-hide.c:202
+msgid "Error attempting to access the database of hidden files"
+msgstr ""
+"Er kan geen toegang worden verkregen tot de databank met verborgen bestanden"
+
+#: src/nautilus-hide.c:219
+msgid "Could not calculate the size of the database of hidden files"
+msgstr ""
+"De omvang van de databank met verborgen bestanden kan niet worden berekend"
+
+#: src/nautilus-hide.c:232
+msgid "Database of hidden files is too big"
+msgstr "De databank met verborgen bestanden is te groot"
+
+#: src/nautilus-hide.c:257
+msgid "I/O error while accessing database of hidden files"
+msgstr ""
+"Er is een i/o-fout opgetreden bij het openen van de databank met verborgen "
+"bestanden"
+
+#: src/nautilus-hide.c:433
+msgid "No files have been selected to be hidden"
+msgstr "Er zijn geen bestanden geselecteerd"
+
+#: src/nautilus-hide.c:446
+msgid ""
+"Could not hide the selected files, error attempting to group them according "
+"to their parent directories"
+msgstr ""
+"De selectie kan niet worden verborgen omdat er niet kan worden gegroepeerd "
+"op basis van de bovenliggende mappen"
+
+#: src/nautilus-hide.c:474
+msgid ""
+"Could not hide the selected files, error attempting to edit the database"
+msgstr ""
+"De selectie kan niet worden verborgen omdat de databank niet kan worden "
+"aangepast"
+
+#: src/nautilus-hide.c:599
+msgid "No files have been selected to be unhidden"
+msgstr "Er zijn geen bestanden geselecteerd"
+
+#: src/nautilus-hide.c:612
+msgid ""
+"Could not unhide the selected files, error attempting to group them "
+"according to their parent directories"
+msgstr ""
+"De selectie kan niet zichtbaar worden gemaakt omdat er niet kan worden "
+"gegroepeerd op basis van de bovenliggende mappen"
+
+#: src/nautilus-hide.c:652
+msgid ""
+"Could not unhide the selected files, error attempting to edit the database"
+msgstr ""
+"De selectie kan niet zichtbaar worden gemaakt omdat de databank niet kan "
+"worden aangepast"
+
+#: src/nautilus-hide.c:911
+msgid "_Hide file"
+msgid_plural "_Hide files"
+msgstr[0] "Bestand verber_gen"
+msgstr[1] "Bestanden verber_gen"
+
+#: src/nautilus-hide.c:917
+msgid "Hide the selected file"
+msgid_plural "Hide the selected files"
+msgstr[0] "Verberg het geselecteerde bestand"
+msgstr[1] "Verberg de geselecteerde bestanden"
+
+#: src/nautilus-hide.c:950
+msgid "_Unhide file"
+msgid_plural "_Unhide files"
+msgstr[0] "Bestand _zichtbaar maken"
+msgstr[1] "Bestanden _zichtbaar maken"
+
+#: src/nautilus-hide.c:956
+msgid "Unhide the selected file"
+msgid_plural "Unhide the selected files"
+msgstr[0] "Bestand _zichtbaar maken"
+msgstr[1] "Bestanden _zichtbaar maken"
