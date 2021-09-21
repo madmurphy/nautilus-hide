@@ -1,11 +1,11 @@
-# Italian translations for nautilus-hide package.
+# Italian translations for Nautilus Hide.
 # Copyright (C) 2021 <madmurphy333@gmail.com>
-# This file is distributed under the same license as the nautilus-hide package.
+# This file is distributed under the same license as the Nautilus Hide package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.2.4\n"
+"Project-Id-Version: nautilus-hide 0.2.6\n"
 "Report-Msgid-Bugs-To: madmurphy333@gmail.com\n"
 "POT-Creation-Date: 2021-05-26 23:06+0200\n"
 "PO-Revision-Date: 2021-05-24 11:52+0200\n"
