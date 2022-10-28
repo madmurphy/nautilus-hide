@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: nautilus-hide 0.2.6\n"
+"Project-Id-Version: nautilus-hide 0.3.0\n"
 "Report-Msgid-Bugs-To: madmurphy333@gmail.com\n"
-"POT-Creation-Date: 2021-09-20 17:11+0200\n"
+"POT-Creation-Date: 2022-10-28 20:46+0100\n"
 "PO-Revision-Date: 2021-09-20 17:16+0200\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: \n"
@@ -85,25 +85,25 @@ msgstr ""
 "De selectie kan niet zichtbaar worden gemaakt omdat de databank niet kan "
 "worden aangepast"
 
-#: src/nautilus-hide.c:911
+#: src/nautilus-hide.c:910
 msgid "_Hide file"
 msgid_plural "_Hide files"
 msgstr[0] "Bestand verber_gen"
 msgstr[1] "Bestanden verber_gen"
 
-#: src/nautilus-hide.c:917
+#: src/nautilus-hide.c:916
 msgid "Hide the selected file"
 msgid_plural "Hide the selected files"
 msgstr[0] "Verberg het geselecteerde bestand"
 msgstr[1] "Verberg de geselecteerde bestanden"
 
-#: src/nautilus-hide.c:950
+#: src/nautilus-hide.c:949
 msgid "_Unhide file"
 msgid_plural "_Unhide files"
 msgstr[0] "Bestand _zichtbaar maken"
 msgstr[1] "Bestanden _zichtbaar maken"
 
-#: src/nautilus-hide.c:956
+#: src/nautilus-hide.c:955
 msgid "Unhide the selected file"
 msgid_plural "Unhide the selected files"
 msgstr[0] "Bestand _zichtbaar maken"

@@ -1,6 +1,6 @@
 {
 	"name": "nautilus-hide",
-	"version": "0.2.6",
+	"version": "0.3.0",
 	"description": "A simple Nautilus extension that adds \"Hide\" and \"Unhide\" to Nautilus right-click menu",
 	"homepage": "https://gitlab.gnome.org/madmurphy/nautilus-hide",
 	"author": "madmurphy333@gmail.com",
@@ -11,7 +11,7 @@
 	},
 	"dependencies": {
 		"glib2": "*",
-		"libnautilus-extension": "*",
+		"libnautilus-extension": ">=4",
 	},
 	"devDependencies": {
 		"gettext": ">=0.19",

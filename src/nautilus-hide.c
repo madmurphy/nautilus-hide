@@ -752,7 +752,6 @@ static void nautilus_hide_pop_files (
 
 static GList * nautilus_hide_get_file_items (
 	NautilusMenuProvider * const provider,
-	GtkWidget * const window,
 	GList * const file_selection
 ) {
 
@@ -984,7 +983,7 @@ static GList * nautilus_hide_get_file_items (
 
 
 static void nautilus_hide_menu_provider_iface_init (
-	NautilusMenuProviderIface * const iface,
+	NautilusMenuProviderInterface * const iface,
 	gpointer const iface_data
 ) {
 

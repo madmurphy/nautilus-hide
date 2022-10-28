@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: nautilus-hide 0.2.6\n"
+"Project-Id-Version: nautilus-hide 0.3.0\n"
 "Report-Msgid-Bugs-To: madmurphy333@gmail.com\n"
-"POT-Creation-Date: 2021-05-26 23:06+0200\n"
+"POT-Creation-Date: 2022-10-28 20:46+0100\n"
 "PO-Revision-Date: 2021-05-24 11:52+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Italian <tp@lists.linux.it>\n"
@@ -80,25 +80,25 @@ msgstr ""
 "Impossibile rendere visibili i file selezionati, errore nel tentativo di "
 "modificare il database"
 
-#: src/nautilus-hide.c:911
+#: src/nautilus-hide.c:910
 msgid "_Hide file"
 msgid_plural "_Hide files"
 msgstr[0] "_Nascondi"
 msgstr[1] "_Nascondi i file"
 
-#: src/nautilus-hide.c:917
+#: src/nautilus-hide.c:916
 msgid "Hide the selected file"
 msgid_plural "Hide the selected files"
 msgstr[0] "Nascondi il file selezionato"
 msgstr[1] "Nascondi i file selezionati"
 
-#: src/nautilus-hide.c:950
+#: src/nautilus-hide.c:949
 msgid "_Unhide file"
 msgid_plural "_Unhide files"
 msgstr[0] "Ripristina _visibilità"
 msgstr[1] "Ripristina _visibilità dei file"
 
-#: src/nautilus-hide.c:956
+#: src/nautilus-hide.c:955
 msgid "Unhide the selected file"
 msgid_plural "Unhide the selected files"
 msgstr[0] "Rendi visibile il file selezionato"
